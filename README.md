@@ -6,11 +6,23 @@ Our Final Project for our second trimester of AP Comp Sci.  Tic-Tac-Toe AI that 
 Proposed Algorithm:
 
 AI identifies current board state
-	I'm imagining some kind of matrix:
-	|  0 -1  0 |
-	|  0  1  0 |
-	| -1  0  1 |
-	where -1 is an x and 1 is an o, and 0 is a blank space
+    Stores the game state in a string of 9 characters, where 'X' represents an X, 'O' represents an O, and ' ' is an empty space.
+    
+     0 | 1 | 2
+    ---+---+---
+     3 | 4 | 5
+    ---+---+---
+     6 | 7 | 8
+
+    Thus, the following board:
+
+     X | O | 
+    ---+---+---
+       | O |  
+    ---+---+---
+       |   | X 
+    
+    would be represented by the string "XO  O   X"
 
 
 AI looks up / creates a decision matrix based on this board state
