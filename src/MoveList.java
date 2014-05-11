@@ -46,6 +46,16 @@ public class MoveList {
 		return out;
 	}
 	
+    public void reset(){
+		for (int i = 0; i < 9; i++){
+			if (gamestate.charAt(i) != 'X' && gamestate.charAt(i) != 'O'){
+				moveList[i] = 1;
+			} else {
+				moveList[i] = 0;
+			}
+		}
+    }
+
     public void probabilityChange(int index, double change){
         if (moveList[index] < Double.MAX_VALUE/20){
         	moveList[index] *= change;

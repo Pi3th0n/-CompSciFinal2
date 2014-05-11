@@ -36,7 +36,6 @@ public class TicTacToeAI{
     }
 
     public void learn(double gameResult){
-        System.out.println("Learning...");
         for (int i = 0; i < recentMoveLists.size(); i++){
             for (int k = 0; k < memory.size(); k++){
                 if (memory.get(k).gamestate.equals(recentMoveLists.get(i).gamestate)){

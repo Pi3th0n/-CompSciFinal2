@@ -5,61 +5,22 @@ public class TerminalTicTacToe{
     public static void main(String[] args){
         TicTacToeAI Alice = new TicTacToeAI();
         TicTacToeAI Bob = new TicTacToeAI();
+        TicTacToeAI Charlie = new TicTacToeAI();
         String gameString = "         ";
         boolean gameOver = false;
-        ArrayList<Double> noobGameLog = new ArrayList<Double>();
-        ArrayList<Double> xprtGameLog = new ArrayList<Double>();
-        int k = 10000;
-        for (int i = 0; i < k; i++){        
-            gameOver = false;
-            gameString = "         ";
-            while (!gameOver){
-                if (gameString.replaceAll("X", "").replaceAll("O", "").length() % 2 == 1 ){
-                    gameString = updateGameString(gameString, Alice.makeMove(gameString), 'X');
-                    System.out.println(toGameBoard(gameString));
-                } else {
-                    gameString = updateGameString(gameString, Bob.makeMove(gameString), 'O');
-                    System.out.println(toGameBoard(gameString));
-                }
-
-                double temp = checkForWin(gameString);
-                if (temp != 0.0 ){
-                    gameOver = true;
-                    if (i == k-1) { System.out.println(Alice.recentMoveLists); }
-                    Alice.learn(temp);
-                    if (temp == 1.5){
-                        Bob.learn(0.5);
-                    } else if (temp == 0.5){
-                        Bob.learn(2.0);
-                    } else {
-                        Bob.learn(1.25);
-                    }
-//                        Bob.recentMoveInts.clear();
-//                        Bob.recentMoveLists.clear();
-                    if (i < 1500) {
-                        noobGameLog.add(new Double(temp));
-                    } else if ( i > (k-1500)) {
-                        xprtGameLog.add(new Double(temp));
-                    }
-                }      
-            }
-        } 
-        System.out.println(Bob.memory);
-        System.out.println(noobGameLog);
-        System.out.println(xprtGameLog);
-        
-        char humanPlayer = 'Q';
-        while (humanPlayer == 'Q'){
-            String input = System.console().readLine("X or O?");
-            if (input.charAt(0) == 'X'){
-                humanPlayer = 'X';
-            } else if (input.charAt(0) == 'O'){
-                humanPlayer = 'O';
-            }
-        }
         boolean done = false;
-        if (humanPlayer == 'O'){
-            while (!done){
+        while (!done) {
+            char humanPlayer = 'Q';
+            while (humanPlayer == 'Q'){
+                String input = System.console().readLine("X or O?");
+                if (input.charAt(0) == 'X'){
+                    humanPlayer = 'X';
+                } else if (input.charAt(0) == 'O'){
+                    humanPlayer = 'O';
+                }
+            }
+        
+            if (humanPlayer == 'O'){
                 gameOver = false;
                 gameString = "         ";
                 while (!gameOver){
@@ -74,18 +35,14 @@ public class TerminalTicTacToe{
                             System.out.println("Invalid Move");
                         }
                     }
-
+    
                     double temp = checkForWin(gameString);
                     if (temp != 0.0 ){
                         gameOver = true;
-                        Alice.learn(temp);
+                        Alice.learn(temp*temp);
                     }
                 }
-                String again = System.console().readLine("Play again? (y/n)");
-                if (again.charAt(0) == 'n') { done = true; }
-            }
-        } else {
-            while (!done){
+            } else {
                 gameOver = false;
                 gameString = "         ";
                 while (!gameOver){
@@ -99,6 +56,50 @@ public class TerminalTicTacToe{
                     } else {
                         gameString = updateGameString(gameString, Bob.makeMove(gameString), 'O');
                         System.out.println(toGameBoard(gameString));
+                    }   
+
+                    double temp = checkForWin(gameString);
+                    if (temp != 0.0 ){
+                        gameOver = true;
+                        if (temp == 1.5){
+                            Bob.learn(0.25);
+                        } else if (temp == 0.5){
+                            Bob.learn(2.25);
+                        } else {
+                            Bob.learn(1.05);
+                        }
+                    }
+                }
+                
+
+            
+            }
+            String again = System.console().readLine("Play again? (y/n)");
+            for (int i = 0; i < 1000; i++){        
+                gameOver = false;
+                gameString = "         ";
+                while (!gameOver){
+                    if (gameString.replaceAll("X", "").replaceAll("O", "").length() % 2 == 1 ){
+                        gameString = updateGameString(gameString, Alice.makeMove(gameString), 'X');
+                        System.out.println(toGameBoard(gameString));
+                    } else {
+                        gameString = updateGameString(gameString, Charlie.makeMove(gameString), 'O');
+                    }
+
+                    double temp = checkForWin(gameString);
+                    if (temp != 0.0 ){
+                        gameOver = true;
+                        Alice.learn(temp);
+                    }      
+                }
+                gameOver = false;
+                gameString = "         ";
+                while (!gameOver){
+                    if (gameString.replaceAll("X", "").replaceAll("O", "").length() % 2 == 1 ){
+                        gameString = updateGameString(gameString, Charlie.makeMove(gameString), 'X');
+                    } else {
+                        gameString = updateGameString(gameString, Bob.makeMove(gameString), 'O');
+                        System.out.println(toGameBoard(gameString));
                     }
 
                     double temp = checkForWin(gameString);
@@ -107,15 +108,15 @@ public class TerminalTicTacToe{
                         if (temp == 1.5){
                             Bob.learn(0.5);
                         } else if (temp == 0.5){
-                            Bob.learn(1.5);
+                            Bob.learn(2.0);
                         } else {
-                            Bob.learn(1.0);
+                            Bob.learn(1.25);
                         }
-                    }
+                    }      
                 }
-                String again = System.console().readLine("Play again? (y/n)");
-                if (again.charAt(0) == 'n') { done = true; }
-            }
+
+            }         
+            if (again.charAt(0) == 'n') { done = true; }
         }
     }
  
