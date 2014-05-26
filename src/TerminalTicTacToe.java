@@ -6,9 +6,12 @@ public class TerminalTicTacToe{
         TicTacToeAI Alice = new TicTacToeAI();
         TicTacToeAI Bob = new TicTacToeAI();
         TicTacToeAI Charlie = new TicTacToeAI();
+        TicTacToeAI David = new TicTacToeAI();
         String gameString = "         ";
         boolean gameOver = false;
-        boolean done = false;
+        boolean done = false;  
+        int k = 0;
+        
         while (!done) {
             char humanPlayer = 'Q';
             while (humanPlayer == 'Q'){
@@ -39,6 +42,16 @@ public class TerminalTicTacToe{
                     double temp = checkForWin(gameString);
                     if (temp != 0.0 ){
                         gameOver = true;
+                        if (temp == 5){
+                            System.out.println("You Lose!");
+                            k = 0;
+                        } else if (temp == 0.05) {
+                            System.out.println("You Win!");
+                            k = 100;
+                        } else {
+                            System.out.println("Tie");
+                            k = 0;
+                        }
                         Alice.learn(temp*temp);
                     }
                 }
@@ -61,12 +74,18 @@ public class TerminalTicTacToe{
                     double temp = checkForWin(gameString);
                     if (temp != 0.0 ){
                         gameOver = true;
-                        if (temp == 1.5){
-                            Bob.learn(0.25);
-                        } else if (temp == 0.5){
-                            Bob.learn(2.25);
+                        if (temp == 5){
+                            System.out.println("You Win!");
+                            k = 100;
+                            Bob.learn(0.05);
+                        } else if (temp == 0.05){
+                            System.out.println("You Lose.");
+                            k = 0;
+                            Bob.learn(5);
                         } else {
-                            Bob.learn(1.05);
+                            System.out.println("Tie.");
+                            k = 0;
+                            Bob.learn(2);
                         }
                     }
                 }
@@ -74,14 +93,12 @@ public class TerminalTicTacToe{
 
             
             }
-            String again = System.console().readLine("Play again? (y/n)");
-            for (int i = 0; i < 1000; i++){        
+            for (int i = 0; i < k; i++){        
                 gameOver = false;
                 gameString = "         ";
                 while (!gameOver){
                     if (gameString.replaceAll("X", "").replaceAll("O", "").length() % 2 == 1 ){
                         gameString = updateGameString(gameString, Alice.makeMove(gameString), 'X');
-                        System.out.println(toGameBoard(gameString));
                     } else {
                         gameString = updateGameString(gameString, Charlie.makeMove(gameString), 'O');
                     }
@@ -99,23 +116,45 @@ public class TerminalTicTacToe{
                         gameString = updateGameString(gameString, Charlie.makeMove(gameString), 'X');
                     } else {
                         gameString = updateGameString(gameString, Bob.makeMove(gameString), 'O');
-                        System.out.println(toGameBoard(gameString));
                     }
 
                     double temp = checkForWin(gameString);
                     if (temp != 0.0 ){
                         gameOver = true;
-                        if (temp == 1.5){
-                            Bob.learn(0.5);
-                        } else if (temp == 0.5){
-                            Bob.learn(2.0);
+                        if (temp == 5){
+                            Bob.learn(0.05);
+                        } else if (temp == 0.05){
+                            Bob.learn(5);
                         } else {
-                            Bob.learn(1.25);
+                            Bob.learn(2);
+                        }
+                    }      
+                }
+                gameOver = false;
+                gameString = "         ";
+                while (!gameOver){
+                    if (gameString.replaceAll("X", "").replaceAll("O", "").length() % 2 == 1 ){
+                        gameString = updateGameString(gameString, Alice.makeMove(gameString), 'X');
+                    } else {
+                        gameString = updateGameString(gameString, Bob.makeMove(gameString), 'O');
+                    }
+
+                    double temp = checkForWin(gameString);
+                    if (temp != 0.0 ){
+                        gameOver = true;
+                        Alice.learn(temp);
+                        if (temp == 5){
+                            Bob.learn(0.05);
+                        } else if (temp == 0.05){
+                            Bob.learn(5);
+                        } else {
+                            Bob.learn(2);
                         }
                     }      
                 }
 
-            }         
+            }
+            String again = System.console().readLine("Play again? (y/n)");
             if (again.charAt(0) == 'n') { done = true; }
         }
     }
@@ -130,6 +169,12 @@ public class TerminalTicTacToe{
 
     }
 
+   /**
+    * Checks the given boardstate to determine if either player is in a winning position.
+    *
+    * @param oldGameState A 9 character string that represents the game state to check.
+    * @return 10 if X wins, 0.05 if O wins, 2 for a tie and 0 if the game is not yet over.
+    */
     public static double checkForWin(String oldGameState){ 
         if (oldGameState.length() != 9){
             throw new IllegalArgumentException("String oldGameState is of incorrect length");
@@ -139,62 +184,62 @@ public class TerminalTicTacToe{
 
         if (oldGameState.charAt(0) == oldGameState.charAt(1) && oldGameState.charAt(0) == oldGameState.charAt(2)) {
             if (oldGameState.charAt(0) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(0) == 'O') {
-                return 0.5;
+                return 0.05;
             }
 
         } else if (oldGameState.charAt(3) == oldGameState.charAt(4) && oldGameState.charAt(3) == oldGameState.charAt(5)){
             if (oldGameState.charAt(3) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(3) == 'O') {
-                return 0.5;
+                return 0.05;
             }
         
         } else if (oldGameState.charAt(6) == oldGameState.charAt(7) && oldGameState.charAt(6) == oldGameState.charAt(8)){
             if (oldGameState.charAt(6) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(6) == 'O') {
-                return 0.5;
+                return 0.05;
             }
         
         } else if (oldGameState.charAt(0) == oldGameState.charAt(3) && oldGameState.charAt(0) == oldGameState.charAt(6)){
             if (oldGameState.charAt(0) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(0) == 'O') {
-                return 0.5;
+                return 0.05;
             }
 
         } else if (oldGameState.charAt(1) == oldGameState.charAt(4) && oldGameState.charAt(1) == oldGameState.charAt(7)){
             if (oldGameState.charAt(1) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(1) == 'O') {
-                return 0.5;
+                return 0.05;
             }
 
         } else if (oldGameState.charAt(2) == oldGameState.charAt(5) && oldGameState.charAt(2) == oldGameState.charAt(8)){
             if (oldGameState.charAt(2) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(2) == 'O') {
-                return 0.5;
+                return 0.05;
             }
 
         } else if (oldGameState.charAt(0) == oldGameState.charAt(4) && oldGameState.charAt(0) == oldGameState.charAt(8)){
             if (oldGameState.charAt(0) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(0) == 'O') {
-                return 0.5;
+                return 0.05;
             }
 
         } else if (oldGameState.charAt(2) == oldGameState.charAt(4) && oldGameState.charAt(2) == oldGameState.charAt(6)){
             if (oldGameState.charAt(2) == 'X'){
-                return 1.5;
+                return 5;
             } else if (oldGameState.charAt(2) == 'O') {
-                return 0.5;
+                return 0.05;
             }
 
         } else if (oldGameState.replaceAll(" ", "").length() == 9) {
-            return 1.0;
+            return 2;
         }
         return 0;
     }
@@ -221,6 +266,28 @@ public class TerminalTicTacToe{
             }
         }
         return newGameState;
+    }
+    
+    public static void teach(TicTacToeAI player){
+        player.memory.add(new MoveList("         ", 0));
+        player.memory.add(new MoveList("X        ", 4));
+        player.memory.add(new MoveList(" X       ", 4));
+        player.memory.add(new MoveList("  X      ", 4));
+        player.memory.add(new MoveList("   X     ", 4));
+        player.memory.add(new MoveList("    X    ", 0));
+        player.memory.add(new MoveList("     X   ", 4));
+        player.memory.add(new MoveList("      X  ", 4));
+        player.memory.add(new MoveList("       X ", 4));
+        player.memory.add(new MoveList("        X", 4));
+        player.memory.add(new MoveList("XO       ", 4));
+        player.memory.add(new MoveList("X O      ", 6));
+        player.memory.add(new MoveList("X  O     ", 4));
+        player.memory.add(new MoveList("X   O    ", 8));
+        player.memory.add(new MoveList("X    O   ", 4));
+        player.memory.add(new MoveList("X     O  ", 2));
+        player.memory.add(new MoveList("X      O ", 4));
+        player.memory.add(new MoveList("X       O", 2));
+        
     }
 
 }
